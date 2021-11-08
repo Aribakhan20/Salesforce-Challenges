@@ -1,0 +1,33 @@
+/*1. Create an APEX Trigger that runs when opportunities are created that does the following:
+- Creates a task associated with the opportunity to follow up in 10 days time - use the subject 'Follow Up' (case matters!)
+- If the Opportunity amount is over 500000 creates a task with the subject ‘Reduce Value’ that is associated with the opportunity, due for completion in two days.
+- Set the status of these tasks to 'New'
+- Assign these tasks to yourself
+*/
+
+trigger Challenge6 on Opportunity (after insert)
+{
+   List<Task> tasks = new List<Task>();
+   for(Opportunity opp : Trigger.new)
+   {
+       Task t = new Task();
+       t.WhatId = opp.id;
+       t.Status = 'New';
+       t.OwnerId = opp.OwnerId;
+       if(opp.Amount >500000)
+       {
+           t.Subject = 'Reduce Value';
+           t.ActivityDate = date.today()+2;
+       }
+       else
+       {
+           t.Subject = 'Follow Up';
+           t.ActivityDate = date.today()+10;
+       }
+       
+       tasks.add(t);
+   }
+   insert tasks;
+    
+    
+}
