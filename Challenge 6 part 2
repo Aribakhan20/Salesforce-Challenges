@@ -1,0 +1,24 @@
+/*2. Create an APEX Trigger that runs when tasks are updated that does the following:
+- If the task has a subject of ‘Reduce Value’ and the status has been changed to ‘Completed’, update the associated opportunity to reduce the amount by 50%.
+*/
+trigger Challenge6_part2 on Task (after update) 
+{
+    List<String> OppIds = new List<String>();
+    for(Task t : Trigger.new)
+    {
+        if(t.Subject == 'Reduce Value' && t.Status == 'Completed' && t.Status!= trigger.oldMap.get(t.Id).Status)
+        {
+            OppIds.add(t.WhatId);
+        }
+    }
+    
+    List<Opportunity> Opp = [select Id, Amount, Name from Opportunity where id = :oppIds];
+    List<Opportunity> o = new List<opportunity>(); 
+    for(Opportunity oppt : Opp)
+    {
+        oppt.Amount = oppt.Amount * 0.5;
+        o.add(oppt);
+    }
+    update o;
+
+}
